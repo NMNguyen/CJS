@@ -137,7 +137,13 @@
                       </el-col>
                   </el-col>
               </el-row>
+              <el-row :gutter="10">
+                  <el-col :span="24">
+                      <comment v-on:push-comment="push_comment_task($event)" :dataActivitiesTask="data_activities_task" :version="version"></comment>
+                  </el-col>
+              </el-row>
           </span>
+
           <span slot="footer" class="dialog-footer">
             <!--<el-button @click="closeModal">Cancel</el-button>-->
             <!--<el-button type="primary" @click="dialogVisible = false">Confirm</el-button>-->
@@ -148,15 +154,19 @@
 <script>
   import axios from 'axios';
   import { VueEditor } from "vue2-editor";
+  import Comment from  './comment_task';
   export default {
       name: 'modal_detail_task',
       components:{
-          VueEditor
+          VueEditor,
+          Comment,
       },
       data(){
           return{
+              version:'',
               isEditTitleTask: false,
               editor: null,
+              data_activities_task:[]
           }
       },
       mounted() {
@@ -179,6 +189,7 @@
           dialogVisible(newVal){
               if (newVal){
                   this.getDetailTask();
+                  this.get_data_activities_task();
               }
           }
       },
@@ -206,8 +217,36 @@
               })
               .then(function (res) {
                   that.task['description_html'] = res['data'].description_html;
+                  that.version  = res['data'].version
                   that.$forceUpdate();
+
               });
+          },
+          get_data_activities_task(){
+                let that = this;
+                let headers = {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                };
+                axios.get(`${that.$urlAPI}/history/userstory/${that.task.id}`, {
+                    headers:headers
+                })
+                .then(function (res) {
+                    if(res && res.data.length > 0){
+                        that.data_activities_task = res.data
+                    }
+                })
+          },
+          push_comment_task(data){
+              let that = this;
+              let headers = {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                };
+                axios.patch(`${that.$urlAPI}/userstories/${that.task.id}`, data,{
+                    headers:headers
+                })
+                .then(function (res) {
+                    that.get_data_activities_task();
+                })
           }
       }
   };
