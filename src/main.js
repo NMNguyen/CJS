@@ -2,7 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import axios from 'axios';
-import Multiselect from 'vue-multiselect';
 import locale from 'element-ui/lib/locale/lang/vi';
 // Require Froala Editor js file.
 require('froala-editor/js/froala_editor.pkgd.min')
@@ -17,7 +16,7 @@ import VueFroala from 'vue-froala-wysiwyg'
 
 import Element from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
+import 'material-icons/iconfont/material-icons.css';
 import Vuex from 'vuex';
 import App from './App';
 import router from './router';
