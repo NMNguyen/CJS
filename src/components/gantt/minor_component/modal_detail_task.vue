@@ -36,74 +36,12 @@
                                       <div slot="header" class="clearfix">
                                         <span><b>Points</b></span>
                                       </div>
-                                         <el-row>
-                                             <el-col :span="8">
-                                                 <p><b>Product Owner</b> </p>
-                                                  <el-dropdown size="mini" split-button type="primary">
-                                                      0
-                                                      <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item>Action 1</el-dropdown-item>
-                                                        <el-dropdown-item>Action 2</el-dropdown-item>
-                                                        <el-dropdown-item>Action 3</el-dropdown-item>
-                                                        <el-dropdown-item>Action 4</el-dropdown-item>
-                                                      </el-dropdown-menu>
-                                                  </el-dropdown>
-                                             </el-col>
-                                             <el-col :span="8">
-                                                  <p><b>Developer</b></p>
-                                                  <el-dropdown size="mini" split-button type="primary">
-                                                      0
-                                                      <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item>Action 1</el-dropdown-item>
-                                                        <el-dropdown-item>Action 2</el-dropdown-item>
-                                                        <el-dropdown-item>Action 3</el-dropdown-item>
-                                                        <el-dropdown-item>Action 4</el-dropdown-item>
-                                                      </el-dropdown-menu>
-                                                  </el-dropdown>
-                                             </el-col>
-                                             <el-col :span="8">
-                                                <p><b>Sale</b></p>
-                                                  <el-dropdown size="mini" split-button type="primary">
-                                                      0
-                                                      <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item>Action 1</el-dropdown-item>
-                                                        <el-dropdown-item>Action 2</el-dropdown-item>
-                                                        <el-dropdown-item>Action 3</el-dropdown-item>
-                                                        <el-dropdown-item>Action 4</el-dropdown-item>
-                                                      </el-dropdown-menu>
-                                                  </el-dropdown>
-                                             </el-col>
-                                         </el-row>
-                                         <el-row>
-                                             <el-col :span="8">
-                                                  <p><b>Deploy</b></p>
-                                                  <el-dropdown size="mini" split-button type="primary">
-                                                      0
-                                                      <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item>Action 1</el-dropdown-item>
-                                                        <el-dropdown-item>Action 2</el-dropdown-item>
-                                                        <el-dropdown-item>Action 3</el-dropdown-item>
-                                                        <el-dropdown-item>Action 4</el-dropdown-item>
-                                                      </el-dropdown-menu>
-                                                  </el-dropdown>
-                                             </el-col>
-                                             <el-col :span="8">
-                                                  <p><b>Designer</b></p>
-                                                  <el-dropdown size="mini" split-button type="primary">
-                                                      0
-                                                      <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item>Action 1</el-dropdown-item>
-                                                        <el-dropdown-item>Action 2</el-dropdown-item>
-                                                        <el-dropdown-item>Action 3</el-dropdown-item>
-                                                        <el-dropdown-item>Action 4</el-dropdown-item>
-                                                      </el-dropdown-menu>
-                                                  </el-dropdown>
-                                             </el-col>
-                                             <el-col :span="8">
-                                                 <p><b>Total Points</b></p>
-                                                    <h3>10</h3>
-                                             </el-col>
-                                         </el-row>
+                                      <point
+                                          v-on:update_version="update_version"
+                                          :points="points"
+                                          :task-detail="task"
+                                          :points-data="pointsData">
+                                      </point>
                                     </el-card>
                               </el-col>
                               <el-col :span="10">
@@ -114,10 +52,13 @@
                                       <div style="padding:10px 0px">
                                           <el-row>
                                               <el-col :span="6">
-                                                <img :src="task.assigned_to_extra_info['photo']" style="border-radius: 50%;width:50px;">
+                                                <img v-if="task.assigned_to_extra_info" :src="task.assigned_to_extra_info['photo']" style="border-radius: 50%;width:50px;">
                                               </el-col>
-                                              <el-col :span="16">
-                                                  <h3>{{task.assigned_to_extra_info['full_name_display']}}</h3>
+                                              <el-col v-if="task.assigned_to_extra_info" :span="16">
+                                                  <h3 >{{task.assigned_to_extra_info['full_name_display']}}</h3>
+                                              </el-col>
+                                              <el-col :span="24" v-else>
+                                                  <span stlye="font-size:20px">Chưa có người đảm nhận</span>
                                               </el-col>
                                           </el-row>
                                           <el-row>
@@ -156,23 +97,33 @@
 <script>
   import axios from 'axios';
   import VueFroala from 'vue-froala-wysiwyg';
-  import { VueEditor } from "vue2-editor";
   import Comment from  './comment_task';
+  import Point from './point';
   export default {
       name: 'modal_detail_task',
       components:{
-          VueEditor,
           VueFroala,
           Comment,
+          Point,
       },
       data(){
           return{
-              configAt: {
-                  at: "@",
-                  data: names,
-                  displayTpl: '<li>${name} <small>${email}</small></li>',
-                  limit: 200
-                },
+              pointsData: [{
+                  'title': 'Product Owner',
+                  'id':5
+              },{
+                  'title': 'Developer',
+                  'id': 19,
+              },{
+                  'title': 'Sale',
+                  'id':20
+              },{
+                  'title': 'Deploy',
+                  'id':21
+              },{
+                  'title': 'Designer',
+                  'id':233
+              }],
               config: {
                   placeholderText: 'Edit Your Content Here!',
                   charCounterCount: false,
@@ -205,6 +156,12 @@
           // this.editor.destroy();
       },
       props:{
+          points:{
+              type: Array,
+              default: function(){
+                  return []
+              }
+          },
           dialogVisible:{
               type: Boolean,
               default: false,
@@ -223,6 +180,9 @@
           }
       },
       methods:{
+          update_version(){
+              this.task.version +=1;
+          },
           save() {
               var toMarkdown = require('to-markdown');
               let that = this;

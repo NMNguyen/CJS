@@ -113,6 +113,7 @@
         </el-row>
         <modal-detail-task
              v-on:close-modal="closeModal"
+             :points="dataProject.points"
              :task="currentTaskData"
              :dialog-visible="dialogVisible">
         </modal-detail-task>
