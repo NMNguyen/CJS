@@ -23,8 +23,10 @@
               <el-row :gutter="10">
                   <el-col :span="24">
                       <el-col :span="14">
-                          <el-card class="box-card custom-editor" >
-                               <vue-editor id="editor1" v-model="task.description_html"></vue-editor>
+                          <el-card class="box-card custom-editor">
+                               <!--<vue-editor id="editor1" v-model="task.description_html"></vue-editor>-->
+                                <froala :tag="'textarea'" :config="config" v-model="task.description_html"></froala>
+                                <button id="saveButton" @click="save">Save</button>
                           </el-card>
                       </el-col>
                       <el-col :span="10">
@@ -147,23 +149,59 @@
 </template>
 <script>
   import axios from 'axios';
+
   import { VueEditor } from "vue2-editor";
+  import VueFroala from 'vue-froala-wysiwyg';
+// var datasource = ["Jacob", "Isabella", "Ethan", "Emma", "Michael", "Olivia" ];
+//
+// // Build data to be used in At.JS config.
+// var names = $.map(datasource, function (value, i) {
+//   return {
+//     'id': i, 'name': value, 'email': value + "@email.com"
+//   };
+// });
   export default {
       name: 'modal_detail_task',
       components:{
-          VueEditor
+          VueEditor,
+          VueFroala
       },
       data(){
           return{
+              configAt: {
+                  at: "@",
+                  data: names,
+                  displayTpl: '<li>${name} <small>${email}</small></li>',
+                  limit: 200
+                },
+              config: {
+                  placeholderText: 'Edit Your Content Here!',
+                  charCounterCount: false,
+                  saveParam: 'description',
+                  saveURL: this.urlToSave,
+                  saveMethod: 'PATCH',
+                  events: {
+                      // 'froalaEditor.initialized': function (e, editor) {
+                      //   editor.$el.atwho(this.configAt);
+                      //   editor.events.on('keydown', function (e) {
+                      //     if (e.which == $.FroalaEditor.KEYCODE.ENTER && editor.$el.atwho('isSelecting')) {
+                      //       return false;
+                      //     }
+                      //   }, true);
+                      // }
+                    }
+              },
               isEditTitleTask: false,
               editor: null,
           }
       },
-      mounted() {
-
+      computed: {
+          urlToSave(){
+              return `${this.$urlAPI}/userstories/${this.task.id}`
+          }
       },
       beforeDestroy() {
-          this.editor.destroy();
+          // this.editor.destroy();
       },
       props:{
           dialogVisible:{
@@ -183,6 +221,23 @@
           }
       },
       methods:{
+          save() {
+              var toMarkdown = require('to-markdown');
+              let that = this;
+              let headers = {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+              };
+              let pars = {
+                  'description': toMarkdown(this.task.description_html, { gfm: true }),
+                  'version': that.task.version
+              };
+              axios.patch(`${that.$urlAPI}/userstories/${that.task.id}`, pars, {
+                  headers: headers
+              })
+              .then(function (res) {
+                  that.task.version += 1;
+              });
+          },
           submit(e){
               e.preventDefault();
           },
