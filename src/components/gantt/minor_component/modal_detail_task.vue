@@ -51,15 +51,23 @@
                                   <el-card class="box-card" style="min-height:203px">
                                       <el-row>
                                           <p><b>Trạng thái task</b></p>
-                                          <el-dropdown size="default" split-button type="primary">
-                                              Ready for test
-                                              <el-dropdown-menu slot="dropdown">
-                                                <el-dropdown-item>Action 1</el-dropdown-item>
-                                                <el-dropdown-item>Action 2</el-dropdown-item>
-                                                <el-dropdown-item>Action 3</el-dropdown-item>
-                                                <el-dropdown-item>Action 4</el-dropdown-item>
-                                              </el-dropdown-menu>
-                                          </el-dropdown>
+                                          <!--<el-dropdown size="default" split-button type="primary">-->
+                                              <!--Ready for test-->
+                                              <!--<el-dropdown-menu slot="dropdown">-->
+                                                <!--<el-dropdown-item>Action 1</el-dropdown-item>-->
+                                                <!--<el-dropdown-item>Action 2</el-dropdown-item>-->
+                                                <!--<el-dropdown-item>Action 3</el-dropdown-item>-->
+                                                <!--<el-dropdown-item>Action 4</el-dropdown-item>-->
+                                              <!--</el-dropdown-menu>-->
+                                          <!--</el-dropdown>-->
+                                          <el-select v-model="status_task" placeholder="Select">
+                                              <el-option
+                                                  v-for="item in dataProject.epic_statuses"
+                                                  :key="item.id"
+                                                  :label="item.name"
+                                                  :value="item.id">
+                                              </el-option>
+                                          </el-select>
                                       </el-row>
                                       <point
                                           :points="points"
@@ -118,6 +126,7 @@
                       <comment
                           v-on:push-comment="push_comment_task($event)"
                           v-on:push-edit-comment="push_edit_comment_task($event)"
+                          v-on:deleted-comment="delete_comment_task($event)"
                           :dataActivitiesTask="data_activities_task"
                           :listAttachFile="list_attach_file"
                           :taskId="task.id"
@@ -139,7 +148,7 @@
             append-to-body
         >
         <el-autocomplete
-            popper-class="emp-autocomplete"
+            popper-class="search-assign-to-task"
             @select="handleSelect"
             :fetch-suggestions="querySearch"
             v-model="search_staff"
@@ -175,6 +184,7 @@
         },
         data:function(){
             return{
+                status_task:{},
                 pointsData: [{
                     'title': 'Product Owner',
                     'id': 5
@@ -226,6 +236,12 @@
             // this.editor.destroy();
         },
         props: {
+            dataProject:{
+                type: Array,
+                default: function(){
+                    return []
+                }
+            },
             points:{
               type: Array,
               default: function(){
@@ -452,6 +468,7 @@
             get_data_activities_task(){
                 let that = this;
                 let headers = {
+                    'x-disable-pagination': false,
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 };
                 axios.get(`${that.$urlAPI}/history/userstory/${that.taskDetail.id}`, {
@@ -459,8 +476,20 @@
                 })
                 .then(function (res) {
                     if(res && res.data.length > 0){
-                        that.data_activities_task = res.data
+                        that.data_activities_task = res['data']
                     }
+                })
+            },
+            delete_comment_task(id){
+                let that = this
+                let headers = {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                };
+                axios.post(`${that.$urlAPI}/history/userstory/${that.taskDetail.id}/delete_comment?id=${id}`,{},{
+                    headers:headers
+                }).then(function (res) {
+                    that.get_data_activities_task();
+                    //that.$forceUpdate();
                 })
             },
             push_comment_task(comment){
@@ -617,21 +646,6 @@
         -webkit-hyphens: none;
         -moz-hyphens: none;
     }
-    /*>>>.el-autocomplete-suggestion li {*/
-        /*position: relative;*/
-        /*vertical-align: middle;*/
-    /*}*/
-    /*>>>.el-autocomplete-suggestion li > p{*/
-        /*display: inline-block;*/
-        /*font-size: 16px;*/
-        /*font-weight: bold;*/
-    /*}*/
-    /*>>>.el-autocomplete-suggestion li > img{*/
-        /*position: absolute;*/
-        /*border-radius: 50% 50% !important;*/
-        /*height: 40px;*/
-        /*display: inline-block;*/
-    /*}*/
     >>>.el-alert__content{
         font-size:18px;
         font-weight:bold;
@@ -644,6 +658,9 @@
         font-size: 16px;
         margin-top:10px;
     }
+    >>>.el-autocomplete{
+        width: 100% !important;
+    }
 </style>
 <style>
     .el-dropdown{
@@ -653,17 +670,31 @@
         width: 100%;
         border-radius: unset;
     }
-    .el-autocomplete-suggestion li > img{
-        border-radius: 50% 50%;
+    .search-assign-to-task li > img{
+        display: inline-block;
+        position: absolute;
+        bottom: 15px;
+        left: 2px;
         height: 40px;
-        display: inline-block;
+        width: 40px;
+        border-radius: 50%;
     }
-    .el-autocomplete-suggestion li {
+    .search-assign-to-task li {
         vertical-align: middle;
+        position: relative;
     }
-    .el-autocomplete-suggestion li > p{
+    .search-assign-to-task li > p{
+        font-size: 14px;
+        padding-left: 30px;
         display: inline-block;
-        font-size: 16px;
         font-weight: bold;
+        font-family: "Helvetica Neue", Helvetica;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: normal;
+        line-break: strict;
+        hyphens: none;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
     }
 </style>

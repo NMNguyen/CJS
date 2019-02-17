@@ -32,26 +32,27 @@
         <el-tabs type="border-card" class="comments-activities-tabs">
             <el-tab-pane>
                 <span slot="label">{{count_comment}} Comments</span>
-                <div class="container-comment" v-for="(commemt, index) in data_activities_task_show">
-                    <span v-if="commemt.comment" class="comments-task">
+                <div class="container-comment" v-for="(comment, index) in data_activities_task_show">
+                    <span v-if="comment.comment && !comment['delete_comment_date']" class="comments-task">
                         <el-row :gutter="10" class="comment-row">
                             <el-col :span="1">
                                 <div>
-                                    <img  :src="commemt.user['photo'] " style="border-radius: 50%;width:50px;"/>
+                                    <img  :src="comment.user['photo'] " style="border-radius: 50%;width:50px;"/>
                                 </div>
                             </el-col>
                             <el-col :span="21">
                                 <div class="content-comment-task">
-                                    <span class="user-comment-display-name">{{commemt.user.name}}</span>
-                                    <span class="user-comment-display-name">{{commemt.created_at | moment('DD/MM/YYYY HH:mm')}}</span>
-                                    <span v-if="commemt.edit_comment_date" class="time-edit-comment">đã chỉnh sửa: {{commemt.edit_comment_date | moment('DD/MM/YYYY HH:mm')}}</span>
+                                    <span class="user-comment-display-name">{{comment.user.name}}</span>
+                                    <span class="user-comment-display-name">{{comment.created_at | moment('DD/MM/YYYY HH:mm')}}</span>
+                                    <span v-if="comment.edit_comment_date" class="time-edit-comment">đã chỉnh sửa: {{comment.edit_comment_date | moment('DD/MM/YYYY HH:mm')}}</span>
 
-                                    <div class="comment-box" v-html="commemt.comment_html"></div>
+                                    <div class="comment-box" v-html="comment.comment_html"></div>
                                 </div>
                             </el-col>
-                            <el-col :span="2" v-if="commemt.user.pk == user_login.id" class="edit-deleted-comment">
-                                <i @click="trigger_edit_comment(commemt)" class="material-icons ">edit</i>
-                                <i @click="trigger_deleted_comment(commemt)" class="material-icons ">delete_forever</i>
+                            <el-col :span="2" v-if="comment.user.pk == user_login.id" class="edit-deleted-comment">
+                                <i @click="trigger_deleted_comment(comment)" class="material-icons icon-deleted-comment">delete_forever</i>
+                                <i @click="trigger_edit_comment(comment)" class="material-icons icon-edit-comment">edit</i>
+
                             </el-col>
                         </el-row>
                     </span>
@@ -212,7 +213,7 @@
                 alert(this.mode_comment)
             },
             trigger_deleted_comment(commemt){
-
+                this.$emit('deleted-comment',commemt.id)
             },
             mode_show_module_attach(){
                 this.mode_show_attachments = 'text'
@@ -320,8 +321,11 @@
     >>>.comments-task .el-row, .activitie-task .el-row{
         padding: 20px 0px;
     }
-    >>>.comments-task .el-col-23 .content-comment-task , .activitie-task .el-col-23 .content-comment-task{
+    >>>.comments-task .el-col-21 .content-comment-task , .activitie-task .el-col-21 .content-comment-task{
         padding-left: 15px;
+    }
+    >>>.comments-task img{
+        max-width: 95%;
     }
     >>>.comments-activities-tabs {
         margin-top: 20px;
@@ -359,17 +363,17 @@
         border-top: 1px solid #e4e3e3 ;
         margin-top: 10px;
     }
-    >>> .icon-edit:hover, .icon-delete:hover{
+    >>> .icon-edit-comment:hover, .icon-deleted-comment:hover{
         color: #409EFF;
         cursor: pointer;
     }
-    >>> .comment-row:hover .icon-edit,.comment-row:hover .icon-delete{
+    >>> .comment-row:hover .icon-edit-comment,.comment-row:hover .icon-deleted-comment{
         display: block;
     }
     >>>.edit-deleted-comment{
 
     }
-    >>> .el-icon-edit, .icon-delete{
+    >>> .icon-edit-comment, .icon-deleted-comment{
         display: none;
         float: right;
         padding: 0px 3px;

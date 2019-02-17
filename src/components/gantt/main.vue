@@ -119,6 +119,7 @@
              :task-detail="currentTaskData"
              :dialog-visible="dialogVisible"
              :members="members"
+             :data-project="dataProject"
         >
         </modal-detail-task>
     </span>
