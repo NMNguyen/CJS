@@ -101,7 +101,7 @@
                                                       closable
                                                       :disable-transitions="false"
                                                       @close="handleClose(id,'watchers')">
-                                                      <template>
+                                                      <template v-if="members[id]">
                                                           <img :src="members[id].photo">
                                                           <p class="name-watchers">{{members[id].full_name_display}}</p>
                                                       </template>

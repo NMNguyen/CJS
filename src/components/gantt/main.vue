@@ -19,6 +19,7 @@
         <el-row class="gantt-container">
             <el-row :span="24">
               <el-table
+                  v-loading="loading"
                   @row-click="rowClick"
                   height="90vh"
                   ref="filterTable"
@@ -140,6 +141,7 @@
         },
         data(){
             return{
+                loading:false,
                 value: null,
                 datetimeTask: null,
                 options1: ['list', 'of', 'options'],
@@ -159,8 +161,25 @@
                 this.dialogVisible = false;
             },
             rowClick(rowData){
+                let that = this;
                 this.currentTaskData = rowData;
-                this.dialogVisible = true;
+                this.$confirm('Bạn muốn xem chi tiết Task tại đây hay xem qua kanban?', 'Điều hướng', {
+                  distinguishCancelAndClose: true,
+                  confirmButtonText: 'Tại đây',
+                  cancelButtonText: 'Kanban'
+                })
+                  .then(() => {
+                    that.dialogVisible = true;
+                  })
+                  .catch(action => {
+                      if (action == 'cancel'){
+                        window.open(
+                          `https://a.happyworking.life/project/fountainhead-cloudjet-kpi/us/${that.currentTaskData.ref}`,
+                          '_blank' // <- This is what makes it open in a new window.
+                        );
+                      }
+
+                  });
             },
             sortProgressDate(val1, val2){
                 if (typeof val1.attributes_values[9] == 'undefined' || typeof val2.attributes_values[9] == 'undefined'){
@@ -266,6 +285,7 @@
                     headers: headers
                 }).then(function(res){
                     task['attributes_values'] = res['data']['attributes_values'];
+                    task['version_attr'] = res['data']['version'];
                     that.dataTaskSpint.push(task);
                 })
             },
@@ -278,6 +298,7 @@
             },
             getDataTaskSprint(){
                 let that = this;
+                that.loading =true;
                 let pars = {
                     'include_attachment': 1,
                     'include_tasks': 1,
@@ -297,6 +318,7 @@
                     res['data'].forEach(function(task, index){
                         that.getAttrTaskData(task, index);
                     });
+                    that.loading = false;
                 })
             },
             getDataMileStone(){

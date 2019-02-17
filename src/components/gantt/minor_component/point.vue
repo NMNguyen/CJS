@@ -1,7 +1,6 @@
 <template>
      <el-row style="margin-top:20px">
          <el-col :span="24" v-for="point in pointsData" :key="point.id">
-             <!--<p><b>{{ point.title }}</b> </p>-->
               <el-dropdown placement="top-start" @command="handleCommand">
                   <el-button size="medium" type="primary">
                       <el-col :span="4">{{getPointByID(point.id)}} <i class="el-icon-arrow-down el-icon--right"></i></el-col>
