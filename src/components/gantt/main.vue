@@ -5,17 +5,6 @@
                 <menu-top></menu-top>
             </el-col>
         </el-row>
-        <!--<el-row class="gantt-container">-->
-            <!--<el-col :span="4">-->
-                <!--<div class="block">-->
-                    <!--<el-date-picker-->
-                      <!--v-model="datetimeTask"-->
-                      <!--type="date"-->
-                      <!--placeholder="Ngày tạo">-->
-                    <!--</el-date-picker>-->
-                <!--</div>-->
-            <!--</el-col>-->
-        <!--</el-row>-->
         <el-row class="gantt-container">
             <el-row :span="24">
               <el-table
@@ -129,6 +118,8 @@
     import MenuTop from '../menu/main';
     import ModalDetailTask from './minor_component/modal_detail_task';
     import axios from 'axios';
+    import router from '../../router';
+
     export default {
         name: 'gantt',
         components: {
@@ -136,9 +127,13 @@
             ModalDetailTask,
         },
         mounted(){
-            this.getDataProject();
-            this.getDataMileStone();
-            this.getDataTaskSprint();
+            if (!localStorage.getItem('token')) {
+                router.replace('/login');
+            } else {
+                this.getDataProject();
+                this.getDataMileStone();
+                this.getDataTaskSprint();
+            }
         },
         data(){
             return{

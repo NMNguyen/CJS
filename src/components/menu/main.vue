@@ -9,12 +9,13 @@
               <img class="menu__profile_avatar" :src="avatarUser">
           </template>
             <el-menu-item class="menu__profile__display_name" index="2-1">{{ displayNameUser }}</el-menu-item>
-            <el-menu-item index="2-2">Đăng xuât</el-menu-item>
+            <el-menu-item index="2-2" @click="logout">Đăng xuât</el-menu-item>
           </el-submenu>
     </el-menu>
 </template>
 
 <script>
+    import route from '../../router'
     export default {
         name: 'menu',
         data(){
@@ -24,10 +25,22 @@
         },
         computed:{
             avatarUser(){
-                return this.userData['photo'];
+                if (this.userData){
+                   return this.userData['photo'];
+                }
+                return '';
             },
             displayNameUser(){
-                return this.userData['full_name'];
+                if (this.userData){
+                   return this.userData['full_name'];
+                }
+            }
+        },
+        methods:{
+            logout(){
+                localStorage.removeItem('token');
+                localStorage.removeItem('userInfo');
+                route.replace('/login');
             }
         }
     };
