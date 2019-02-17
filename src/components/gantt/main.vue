@@ -12,7 +12,7 @@
                   @row-click="rowClick"
                   height="90vh"
                   ref="filterTable"
-                :data="dataTaskSpint"
+                :data="dataTaskSpint.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
                 :default-sort = "{prop: 'id', order: 'descending'}"
                 :row-class-name="tableRowClassName"
                 style="width: 100%">
@@ -101,6 +101,19 @@
               </el-table>
             </el-row>
         </el-row>
+        <el-row>
+            <el-col :span="24">
+                <el-pagination
+                  @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange"
+                  :current-page.sync="currentPage"
+                  :page-sizes="[50, 100, 200, 300]"
+                  :page-size.sync="pageSize"
+                  layout="sizes, prev, pager, next"
+                  :total="parseInt(totalTask)">
+                </el-pagination>
+            </el-col>
+        </el-row>
         <modal-detail-task
              v-on:close-modal="closeModal"
              :custom-attr="dataProject.userstory_custom_attributes"
@@ -132,10 +145,14 @@
                 this.getDataProject();
                 this.getDataMileStone();
                 this.getDataTaskSprint();
+                // this.getDataTaskSprint();
             }
         },
         data(){
             return{
+                pageSize:50,
+                totalTask:0,
+                currentPage:1,
                 loading:false,
                 value: null,
                 datetimeTask: null,
@@ -152,6 +169,14 @@
             }
         },
         methods:{
+            handleSizeChange(val) {
+                console.log(`${val} items per page`);
+                console.log(this.dataTaskSpint.length);
+                console.log(this.dataTaskSpint.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize))
+              },
+              handleCurrentChange(val) {
+                console.log(`current page: ${val}`);
+              },
             closeModal(){
                 this.dialogVisible = false;
             },
@@ -291,30 +316,36 @@
                     return full_name;
                 }
             },
-            getDataTaskSprint(){
+            getDataTaskSprint(page =1 ){
                 let that = this;
-                that.loading =true;
+                that.loading = true;
                 let pars = {
                     'include_attachment': 1,
                     'include_tasks': 1,
                     'project': 1,
                     'status__is_archived': false,
-                    // 'page': 5,
+                    'page': page
                 }
                 let headers = {
                     // maxContentLength: 100,
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    // 'x-disable-pagination': false,
-                }
-                axios.get(`${that.$urlAPI}/userstories`,{
+                    // 'x-disable-pagination': true,
+                };
+                let jqxhr = axios.get(`${that.$urlAPI}/userstories`,{
                     params: pars,
                     headers: headers
-                }).then(function(res){
-                    res['data'].forEach(function(task, index){
+                });
+                jqxhr.then((response)=>{
+                    that.totalTask = response['headers']['x-pagination-count'];
+                    if (response['headers']['x-pagination-next']){
+                        that.getDataTaskSprint(page+=1)
+                    }
+                    response['data'].forEach(function(task, index){
                         that.getAttrTaskData(task, index);
                     });
                     that.loading = false;
                 })
+                return jqxhr;
             },
             getDataMileStone(){
                 let that = this;
