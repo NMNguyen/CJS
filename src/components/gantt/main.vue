@@ -10,7 +10,7 @@
               <el-table
                   v-loading="loading"
                   @row-click="rowClick"
-                  height="90vh"
+                  height="85vh"
                   ref="filterTable"
                 :data="dataTaskSpint.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
                 :default-sort = "{prop: 'id', order: 'descending'}"
