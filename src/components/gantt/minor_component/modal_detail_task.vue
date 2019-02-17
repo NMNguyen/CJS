@@ -80,12 +80,12 @@
                                               </el-dropdown-menu>
                                           </el-dropdown>
                                       </el-row>
-                                      <point
-                                          v-on:update_version="update_version"
-                                          :points="points"
-                                          :task-detail="taskDetail"
-                                          :points-data="pointsData">
-                                      </point>
+                                      <!--<point-->
+                                          <!--v-on:update_version="update_version"-->
+                                          <!--:points="points"-->
+                                          <!--:task-detail="taskDetail"-->
+                                          <!--:points-data="pointsData">-->
+                                      <!--</point>-->
                                       <div style="padding:10px 0px">
                                           <el-row>
                                               <div v-if="task.assigned_to == null">
@@ -137,11 +137,13 @@
                  <el-col :span="18">
                       <comment
                           v-on:push-comment="push_comment_task($event)"
+                          v-on:push-edit-comment="push_edit_comment_task($event)"
                           :dataActivitiesTask="data_activities_task"
                           :listAttachFile="list_attach_file"
                           :taskId="task.id"
                       ></comment>
                   </el-col>
+
               </el-row>
           </span>
 
@@ -153,18 +155,21 @@
         <el-dialog
             title="Tìm người đảm nhận"
             :visible.sync="show_add_watch"
-            width="30%">
-            <el-autocomplete popper-class="emp-autocomplete"
-                             @select="handleSelect"
-                             :fetch-suggestions="querySearch"
-                             v-model="search_staff"
-                             placeholder="">
-                        <template class="search-users" slot-scope="{ item }">
-                            <img :src="item.photo">
-                            <p class="name-watchers">{{item.full_name_display}}</p>
-                        </template>
+            width="30%"
+            append-to-body
+        >
+        <el-autocomplete
+            popper-class="emp-autocomplete"
+            @select="handleSelect"
+            :fetch-suggestions="querySearch"
+            v-model="search_staff"
+            >
+            <template class="search-users" slot-scope="{ item }">
+                <img :src="item.photo">
+                <p class="name-watchers">{{item.full_name_display}}</p>
+            </template>
             <i class="el-icon-search el-input__icon" slot="suffix"></i>
-            </el-autocomplete>
+        </el-autocomplete>
         <span slot="footer" class="dialog-footer">
             <el-button @click="show_add_watch = false">Cancel</el-button>
             <el-button type="primary" @click="add_watcher_and_assign_to()">Confirm</el-button>
@@ -491,6 +496,23 @@
                     //that.$forceUpdate();
                 })
             },
+            push_edit_comment_task(comment){
+                let that = this;
+                let data = {comment: comment.comment}
+                let headers = {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                };
+                axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}/edit_comment?id=${comment.id}`, data,{
+                    headers:headers
+                })
+                .then(function (res) {
+                    that.get_data_activities_task();
+                    if(res['data']){
+                        that.get_data_activities_task();
+                    }
+                    //that.$forceUpdate();
+                })
+            },
             get_attach_file(){
                 let that = this;
                 let headers = {
@@ -611,21 +633,21 @@
         -webkit-hyphens: none;
         -moz-hyphens: none;
     }
-    >>>.el-autocomplete-suggestion li {
-        position: relative;
-        vertical-align: middle;
-    }
-    >>>.el-autocomplete-suggestion li > p{
-        display: inline-block;
-        font-size: 16px;
-        font-weight: bold;
-    }
-    >>>.el-autocomplete-suggestion li > img{
-        position: absolute;
-        border-radius: 50% 50% !important;
-        height: 40px;
-        display: inline-block;
-    }
+    /*>>>.el-autocomplete-suggestion li {*/
+        /*position: relative;*/
+        /*vertical-align: middle;*/
+    /*}*/
+    /*>>>.el-autocomplete-suggestion li > p{*/
+        /*display: inline-block;*/
+        /*font-size: 16px;*/
+        /*font-weight: bold;*/
+    /*}*/
+    /*>>>.el-autocomplete-suggestion li > img{*/
+        /*position: absolute;*/
+        /*border-radius: 50% 50% !important;*/
+        /*height: 40px;*/
+        /*display: inline-block;*/
+    /*}*/
     >>>.el-alert__content{
         font-size:18px;
         font-weight:bold;
@@ -646,5 +668,18 @@
     .el-dropdown .el-button--medium{
         width: 100%;
         border-radius: unset;
+    }
+    .el-autocomplete-suggestion li > img{
+        border-radius: 50% 50%;
+        height: 40px;
+        display: inline-block;
+    }
+    .el-autocomplete-suggestion li {
+        vertical-align: middle;
+    }
+    .el-autocomplete-suggestion li > p{
+        display: inline-block;
+        font-size: 16px;
+        font-weight: bold;
     }
 </style>

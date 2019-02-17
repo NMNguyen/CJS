@@ -34,13 +34,13 @@
                 <span slot="label">{{count_comment}} Comments</span>
                 <div class="container-comment" v-for="(commemt, index) in data_activities_task_show">
                     <span v-if="commemt.comment" class="comments-task">
-                        <el-row :gutter="10">
+                        <el-row :gutter="10" class="comment-row">
                             <el-col :span="1">
                                 <div>
                                     <img  :src="commemt.user['photo'] " style="border-radius: 50%;width:50px;"/>
                                 </div>
                             </el-col>
-                            <el-col :span="23">
+                            <el-col :span="21">
                                 <div class="content-comment-task">
                                     <span class="user-comment-display-name">{{commemt.user.name}}</span>
                                     <span class="user-comment-display-name">{{commemt.created_at | moment('DD/MM/YYYY HH:mm')}}</span>
@@ -48,6 +48,10 @@
 
                                     <div class="comment-box" v-html="commemt.comment_html"></div>
                                 </div>
+                            </el-col>
+                            <el-col :span="2" v-if="commemt.user.pk == user_login.id" class="edit-deleted-comment">
+                                <i @click="trigger_edit_comment()" class="el-icon-delete"></i>
+                                <i @click="trigger_deleted_comment()" class="el-icon-edit"></i>
                             </el-col>
                         </el-row>
                     </span>
@@ -120,6 +124,7 @@
         name: "Comment",
         data(){
             return{
+                user_login:JSON.parse(localStorage.getItem('userInfo')),
                 config: {
                     toolbarSticky: false,
                     // toolbarInline: true,
@@ -146,6 +151,8 @@
                     'created_custom_attributes':'created custom attributes',
                     'updated_custom_attributes':'updated custom attributes'
                 },
+                mode_comment:'comment',
+                id_edit_comment:''
             }
         },
         computed:{
@@ -196,6 +203,16 @@
             }
         },
         methods:{
+            trigger_edit_comment(){
+                alert("fuckkkk")
+                // this.mode_comment = 'edit_comment'
+                // this.comment_msg = comment.comment
+                // this.id_edit_comment = comment.id
+                //alert(this.mode_comment)
+            },
+            trigger_deleted_comment(){
+
+            },
             mode_show_module_attach(){
                 this.mode_show_attachments = 'text'
             },
@@ -272,7 +289,15 @@
                 }
             },
             save_comment(){
-                this.$emit('push-comment',this.comment_msg);
+                if(this.mode_comment == 'comment') {
+                    this.$emit('push-comment', this.comment_msg);
+                }else if(this.mode_comment == 'edit_comment'){
+                    let data = {
+                        id : this.id_edit_comment ,
+                        comment: this.comment_msg
+                    }
+                    this.$emit('push-edit-comment', data);
+                }
                 this.comment_msg = ""
             },
             cancel_comment(){
@@ -332,5 +357,20 @@
         padding: 20px 10px ;
         border-top: 1px solid #e4e3e3 ;
         margin-top: 10px;
+    }
+    >>> .el-icon-edit:hover, .el-icon-delete:hover{
+        color: #409EFF;
+        cursor: pointer;
+    }
+    >>> .comment-row:hover .el-icon-edit,.comment-row:hover .el-icon-delete{
+        display: block;
+    }
+    >>>.edit-deleted-comment{
+
+    }
+    >>> .el-icon-edit, .el-icon-delete{
+        display: none;
+        float: right;
+        padding: 0px 3px;
     }
 </style>
