@@ -5,17 +5,17 @@
                 <menu-top></menu-top>
             </el-col>
         </el-row>
-        <el-row class="gantt-container">
-            <el-col :span="4">
-                <div class="block">
-                    <el-date-picker
-                      v-model="datetimeTask"
-                      type="date"
-                      placeholder="Ngày tạo">
-                    </el-date-picker>
-                </div>
-            </el-col>
-        </el-row>
+        <!--<el-row class="gantt-container">-->
+            <!--<el-col :span="4">-->
+                <!--<div class="block">-->
+                    <!--<el-date-picker-->
+                      <!--v-model="datetimeTask"-->
+                      <!--type="date"-->
+                      <!--placeholder="Ngày tạo">-->
+                    <!--</el-date-picker>-->
+                <!--</div>-->
+            <!--</el-col>-->
+        <!--</el-row>-->
         <el-row class="gantt-container">
             <el-row :span="24">
               <el-table
@@ -129,7 +129,7 @@
         name: 'gantt',
         components: {
             MenuTop,
-            ModalDetailTask
+            ModalDetailTask,
         },
         mounted(){
             this.getDataProject();

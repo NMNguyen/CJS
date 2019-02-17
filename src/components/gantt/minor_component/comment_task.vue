@@ -58,7 +58,7 @@
                 <div class="btn-confirm-comment">
                     <el-row :gutter="10">
                         <el-col :span="23">
-                            <vue-editor id="editor2" class="input-comment" v-model="comment_msg"></vue-editor>
+                            <froala :tag="'textarea'" :config="config" v-model="comment_msg"></froala>
                             <!--<el-input :rows="row_comment"class="input-comment" type="textarea" v-model="comment_msg"></el-input>-->
                         </el-col>
                         <el-col :span="1">
