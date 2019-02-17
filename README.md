@@ -1,4 +1,4 @@
-# hihi
+# CJS ES6
 
 > A Vue.js project
 
