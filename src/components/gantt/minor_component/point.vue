@@ -11,29 +11,20 @@
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
-                        :command="{point:item,id: point.id}"
+                        :command="{item:item,id: point.id}"
                         v-for="item in points" :key="item.id">
                         {{item.name}}
                     </el-dropdown-item>
                   </el-dropdown-menu>
               </el-dropdown>
          </el-col>
-         <el-col :span="24">
-             <!--<p><b>Total Points</b> </p>-->
-             <!--<el-col :span="24">-->
-                <!--<b><span style="font-size:20px">{{sumPoints()}}</span></b>-->
-             <!--</el-col>-->
-             <el-dropdown>
-                  <el-button size="medium" type="info">
-                      <el-col :span="4">{{sumPoints()}}</el-col>
-                      <el-col :span="20">
-                          <span style="float:right">Total Points</span>
-                      </el-col>
-                  </el-button>
-              </el-dropdown>
-             <!--<el-col :span="14">-->
-                <!--<el-button type="text" size="medium" icon="el-icon-check"></el-button>-->
-             <!--</el-col>-->
+         <el-col :span="24" class="detailTask__total_point">
+              <el-col :span="4" style="text-align: center">
+                  {{sumPoints}}
+              </el-col>
+              <el-col :span="20">
+                  <span style="float:right">Total Points</span>
+              </el-col>
          </el-col>
      </el-row>
 </template>
@@ -60,19 +51,23 @@
             default: {}
         }
       },
+      computed:{
+          sumPoints(){
+              let sum = 0;
+              let that = this;
+              let arrayPoint = Object.keys(this.taskDetail.points);
+              if (arrayPoint){
+                  arrayPoint.forEach(function (point) {
+                      sum += that.getPointByID(point, true) || 0;
+                  });
+              }
+              return sum;
+          }
+      },
       methods:{
           handleCommand(data) {
-              this.taskDetail.points[data.id] = data.point.id;
+              this.taskDetail.points[data.id] = data.item.id;
               this.updatePointTask();
-          },
-          sumPoints() {
-              let that = this;
-              let sum = 0;
-              let arrayPoint = Object.keys(this.taskDetail.points);
-              arrayPoint.forEach(function (point) {
-                  sum += that.getPointByID(point, true) || 0;
-              });
-              return sum;
           },
           getPointByID(id, sum) {
               let idPoint = this.taskDetail.points[id];
@@ -99,5 +94,11 @@
 </script>
 
 <style scoped>
-
+    >>>.detailTask__total_point{
+        background:#909399;
+        padding:10px 20px;
+        color:white;
+        font-size:16px;
+        font-weight:bold;
+    }
 </style>

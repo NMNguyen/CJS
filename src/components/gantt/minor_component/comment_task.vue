@@ -50,8 +50,8 @@
                                 </div>
                             </el-col>
                             <el-col :span="2" v-if="commemt.user.pk == user_login.id" class="edit-deleted-comment">
-                                <i @click="trigger_edit_comment()" class="el-icon-delete"></i>
-                                <i @click="trigger_deleted_comment()" class="el-icon-edit"></i>
+                                <i @click="trigger_edit_comment(commemt)" class="material-icons ">edit</i>
+                                <i @click="trigger_deleted_comment(commemt)" class="material-icons ">delete_forever</i>
                             </el-col>
                         </el-row>
                     </span>
@@ -203,14 +203,15 @@
             }
         },
         methods:{
-            trigger_edit_comment(){
+            trigger_edit_comment(commemt){
                 alert("fuckkkk")
-                // this.mode_comment = 'edit_comment'
-                // this.comment_msg = comment.comment
-                // this.id_edit_comment = comment.id
-                //alert(this.mode_comment)
+                console.log(commemt)
+                this.mode_comment = 'edit_comment'
+                this.comment_msg = commemt['comment']
+                this.id_edit_comment = commemt.id
+                alert(this.mode_comment)
             },
-            trigger_deleted_comment(){
+            trigger_deleted_comment(commemt){
 
             },
             mode_show_module_attach(){
@@ -358,19 +359,20 @@
         border-top: 1px solid #e4e3e3 ;
         margin-top: 10px;
     }
-    >>> .el-icon-edit:hover, .el-icon-delete:hover{
+    >>> .icon-edit:hover, .icon-delete:hover{
         color: #409EFF;
         cursor: pointer;
     }
-    >>> .comment-row:hover .el-icon-edit,.comment-row:hover .el-icon-delete{
+    >>> .comment-row:hover .icon-edit,.comment-row:hover .icon-delete{
         display: block;
     }
     >>>.edit-deleted-comment{
 
     }
-    >>> .el-icon-edit, .el-icon-delete{
+    >>> .el-icon-edit, .icon-delete{
         display: none;
         float: right;
         padding: 0px 3px;
+        font-size: 14px;
     }
 </style>

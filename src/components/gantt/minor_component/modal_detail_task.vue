@@ -34,40 +34,21 @@
                                     <el-col :span="1">
                                         <div>
                                             <el-tooltip class="item" effect="dark" content="Save" placement="right">
-                                                <i @click="save_comment()" class="material-icons save-comment">save</i>
-                                            </el-tooltip>
-                                        </div>
-                                        <div>
-                                            <el-tooltip class="item" effect="dark" content="Cancel" placement="right">
-                                                <i @click="cancel_comment()" class="material-icons cancel-comment">close</i>
+                                                <i @click="save()" class="material-icons save-comment">save</i>
                                             </el-tooltip>
                                         </div>
                                     </el-col>
                                 </el-row>
                             </div>
                           </el-card>
-                          <custom-field></custom-field>
+                          <custom-field
+                              :task-detail="taskDetail"
+                              :custom-attr="customAttr"></custom-field>
                       </el-col>
                       <el-col :span="6">
                           <el-row :gutter="10">
-                              <!--<el-col :span="14">-->
-                                     <!--<el-card class="box-card" style="min-height:203px">-->
-                                      <!--<div slot="header" class="clearfix">-->
-                                        <!--<span><b>Points</b></span>-->
-                                      <!--</div>-->
-                                      <!--<point-->
-                                          <!--v-on:update_version="update_version"-->
-                                          <!--:points="points"-->
-                                          <!--:task-detail="taskDetail"-->
-                                          <!--:points-data="pointsData">-->
-                                      <!--</point>-->
-                                    <!--</el-card>-->
-                              <!--</el-col>-->
                               <el-col :span="24">
                                   <el-card class="box-card" style="min-height:203px">
-                                      <!--<div slot="header" class="clearfix">-->
-                                          <!--<span><b>Thông tin task</b></span>-->
-                                      <!--</div>-->
                                       <el-row>
                                           <p><b>Trạng thái task</b></p>
                                           <el-dropdown size="default" split-button type="primary">
@@ -80,12 +61,11 @@
                                               </el-dropdown-menu>
                                           </el-dropdown>
                                       </el-row>
-                                      <!--<point-->
-                                          <!--v-on:update_version="update_version"-->
-                                          <!--:points="points"-->
-                                          <!--:task-detail="taskDetail"-->
-                                          <!--:points-data="pointsData">-->
-                                      <!--</point>-->
+                                      <point
+                                          :points="points"
+                                          :task-detail="taskDetail"
+                                          :points-data="pointsData">
+                                      </point>
                                       <div style="padding:10px 0px">
                                           <el-row>
                                               <div v-if="task.assigned_to == null">
@@ -222,6 +202,7 @@
                 data_activities_task:[],
                 list_attach_file:[],
                 config: {
+                    fontSizeDefaultSelection: '16',
                     heightMax: 700,
                     heightMin: 600,
                     toolbarSticky: false,
@@ -250,6 +231,12 @@
               default: function(){
                   return []
               }
+            },
+            customAttr:{
+                type: Array,
+                default: function(){
+                    return []
+                }
             },
             dialogVisible:{
                 type: Boolean,
@@ -428,7 +415,7 @@
                     'description': toMarkdown(this.task.description_html, { gfm: true }),
                     'version': that.task.version
                 };
-                axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, pars, {
+                axios.patch(`${that.$urlAPI}/userstories/${that.task.id}`, pars, {
                     headers: headers
                 })
                 .then(function (res) {
@@ -502,14 +489,11 @@
                 let headers = {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 };
-                axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}/edit_comment?id=${comment.id}`, data,{
+                axios.post(`${that.$urlAPI}/history/userstory/${that.taskDetail.id}/edit_comment?id=${comment.id}`, data,{
                     headers:headers
                 })
                 .then(function (res) {
                     that.get_data_activities_task();
-                    if(res['data']){
-                        that.get_data_activities_task();
-                    }
                     //that.$forceUpdate();
                 })
             },
@@ -545,7 +529,7 @@
         cursor:pointer;
     }
     >>>.el-textarea__inner{
-        font-size:24px;
+        font-size:20px;
     }
     >>>.el-dialog__body{
         padding-top:0px;

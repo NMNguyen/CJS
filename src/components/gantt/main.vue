@@ -113,6 +113,7 @@
         </el-row>
         <modal-detail-task
              v-on:close-modal="closeModal"
+             :custom-attr="dataProject.userstory_custom_attributes"
              :points="dataProject.points"
              :task-detail="currentTaskData"
              :dialog-visible="dialogVisible"
