@@ -114,8 +114,10 @@
         <modal-detail-task
              v-on:close-modal="closeModal"
              :points="dataProject.points"
-             :task="currentTaskData"
-             :dialog-visible="dialogVisible">
+             :task-detail="currentTaskData"
+             :dialog-visible="dialogVisible"
+             :members="members"
+        >
         </modal-detail-task>
     </span>
 </template>
@@ -128,7 +130,7 @@
         name: 'gantt',
         components: {
             MenuTop,
-            ModalDetailTask
+            ModalDetailTask,
         },
         mounted(){
             this.getDataProject();
@@ -148,6 +150,7 @@
                 columnList: [],
                 dialogVisible: false,
                 currentTaskData: {},
+                members:[]
             }
         },
         methods:{
@@ -328,6 +331,10 @@
                     .then(function (res) {
                         // handle success
                         that.dataProject = res['data'];
+                        that.members = res['data'].members;
+                        if (that.members.length >0) {
+                            that.members = _.keyBy(that.members, "id")
+                        }
                         that.dataProject['us_statuses'] = res['data']['us_statuses'].map(us=>{
                             let col = us;
                             col['text'] = us.name;

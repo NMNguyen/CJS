@@ -1,8 +1,34 @@
 <template>
     <div>
-        <!--<div v-for="commemt in data_actived_task">-->
-            <!--tesssssssssssst-->
-        <!--</div>-->
+        <div>
+            <el-upload
+                    ref="upload"
+                    class="upload-demo"
+                    name="attached_file"
+                    :action="url"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    multiple
+                    :thumbnail-mode="true"
+                    :data="data_attach_file"
+                    :headers="headers"
+                    :on-exceed="handleExceed"
+                    :list-type="mode_show_attachments"
+                    :file-list="fileList">
+                <div class="btn-attach title-add_attach">
+                    <span>attachments</span>
+                </div>
+                <div class="btn-attach mode_add_attach">
+                    <i class="material-icons" @click="mode_show_module_attach()">view_module</i>
+                    <i class="material-icons" @click="mode_show_list_attach()">list</i>
+                </div>
+                <div slot="trigger" class="btn-attach add_attach">
+                    <i  class="material-icons">add_box</i>
+                </div>
+
+            </el-upload>
+        </div>
         <el-tabs type="border-card" class="comments-activities-tabs">
             <el-tab-pane>
                 <span slot="label">{{count_comment}} Comments</span>
@@ -29,7 +55,8 @@
                 <div class="btn-confirm-comment">
                     <el-row :gutter="10">
                         <el-col :span="23">
-                            <el-input :rows="row_comment"class="input-comment" type="textarea" v-model="comment_msg"></el-input>
+                            <froala :tag="'textarea'" :config="config" v-model="comment_msg"></froala>
+                            <!--<el-input :rows="row_comment"class="input-comment" type="textarea" v-model="comment_msg"></el-input>-->
                         </el-col>
                         <el-col :span="1">
                             <div>
@@ -90,9 +117,14 @@
 <script>
     import axios from 'axios';
     export default {
-        name: "comment_task.vue",
+        name: "Comment",
         data(){
             return{
+                config:{},
+                mode_show_attachments:'text',
+                url:`${this.$urlAPI}/userstories/attachments`,
+                headers:{Authorization: `Bearer ${localStorage.getItem('token')}`,},
+                fileList: [],
                 row_comment:5,
                 data_activities_task_show:[],
                 array_field_log_has_type_array:['assigned_to','status','milestone','description_diff','subject'],
@@ -106,14 +138,8 @@
                     'subject': 'subject',
                     'created_custom_attributes':'created custom attributes',
                     'updated_custom_attributes':'updated custom attributes'
-                }
+                },
             }
-        },
-        mounted(){
-
-        },
-        beforeDestroy(){
-
         },
         computed:{
             count_comment() {
@@ -125,16 +151,28 @@
                 if(this.data_activities_task_show ){
                     return this.data_activities_task_show.reduce((cnt,elm) => cnt+1,0)
                 }
+            },
+            data_attach_file() {
+                return {
+                    project: 1,
+                    object_id: this.taskId,
+                    from_comment: false,
+                }
             }
         },
         props:{
             dataActivitiesTask:{
                 type: Array,
                 default: [],
+
             },
-            version:{
+            taskId:{
                 type: [String,Number],
                 default: '',
+            },
+            listAttachFile:{
+                type: Array,
+                default: [],
             }
 
         },
@@ -143,9 +181,41 @@
                 if(val){
                     this.data_activities_task_show = val
                 }
+            },
+            listAttachFile(val){
+                if(val){
+                 this.fileList = val
+                }
             }
         },
         methods:{
+            mode_show_module_attach(){
+                this.mode_show_attachments = 'text'
+            },
+            mode_show_list_attach(){
+                this.mode_show_attachments = 'text'
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+                let that = this;
+                let headers = {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                };
+                axios.delete(`${that.$urlAPI}/userstories/attachments/${file.id}`, {
+                    headers: headers
+                })
+                .then(function (res) {
+                });
+            },
+            handlePreview(file) {
+                console.log(file);
+            },
+            handleExceed(files, fileList) {
+                this.$message.warning(`The limit is 3, you selected ${files.length} files this time, add up to ${files.length + fileList.length} totally`);
+            },
+            beforeRemove(file, fileList) {
+                return this.$confirm(`Bạn có chắc muốn xóa ${ file.name }？`);
+            },
             show_description(array_description){
                 if (array_description.length >0){
                     array_description.forEach(function (item, i) {
@@ -195,14 +265,8 @@
                 }
             },
             save_comment(){
-                var comment = {
-                    comment: this.comment_msg,
-                    version: this.version
-                }
-                this.$emit('push-comment',comment).then(function () {
-                   this.comment_msg = ""
-                })
-
+                this.$emit('push-comment',this.comment_msg);
+                this.comment_msg = ""
             },
             cancel_comment(){
                 this.comment_msg = ""
@@ -251,5 +315,19 @@
     >>>.btn-confirm-comment .material-icons{
         cursor: pointer;
         font-size: 16px;
+    }
+    >>> .btn-attach {
+        display: inline-block;
+    }
+    >>> .el-upload{
+        float: right;
+    }
+    >>> .mode_add_attach{
+        float: right;
+    }
+    >>> .upload-demo{
+        padding: 20px 10px ;
+        border-top: 1px solid #e4e3e3 ;
+        margin-top: 10px;
     }
 </style>
