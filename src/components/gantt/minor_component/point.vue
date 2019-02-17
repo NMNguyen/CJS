@@ -1,10 +1,13 @@
 <template>
-     <el-row>
-         <el-col :span="8" v-for="point in pointsData" :key="point.id">
-             <p><b>{{ point.title }}</b> </p>
-              <el-dropdown @command="handleCommand">
-                  <el-button size="mini" type="primary">
-                   {{getPointByID(point.id)}} <i class="el-icon-arrow-down el-icon--right"></i>
+     <el-row style="margin-top:20px">
+         <el-col :span="24" v-for="point in pointsData" :key="point.id">
+             <!--<p><b>{{ point.title }}</b> </p>-->
+              <el-dropdown placement="top-start" @command="handleCommand">
+                  <el-button size="medium" type="primary">
+                      <el-col :span="4">{{getPointByID(point.id)}} <i class="el-icon-arrow-down el-icon--right"></i></el-col>
+                      <el-col :span="20">
+                          <span style="float:right">{{point.title}}</span>
+                      </el-col>
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
@@ -15,11 +18,19 @@
                   </el-dropdown-menu>
               </el-dropdown>
          </el-col>
-         <el-col :span="8">
-             <p><b>Total Points</b> </p>
-             <el-col :span="24">
-                <b><span style="font-size:20px">{{sumPoints()}}</span></b>
-             </el-col>
+         <el-col :span="24">
+             <!--<p><b>Total Points</b> </p>-->
+             <!--<el-col :span="24">-->
+                <!--<b><span style="font-size:20px">{{sumPoints()}}</span></b>-->
+             <!--</el-col>-->
+             <el-dropdown>
+                  <el-button size="medium" type="info">
+                      <el-col :span="4">{{sumPoints()}}</el-col>
+                      <el-col :span="20">
+                          <span style="float:right">Total Points</span>
+                      </el-col>
+                  </el-button>
+              </el-dropdown>
              <!--<el-col :span="14">-->
                 <!--<el-button type="text" size="medium" icon="el-icon-check"></el-button>-->
              <!--</el-col>-->

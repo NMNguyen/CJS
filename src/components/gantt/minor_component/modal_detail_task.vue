@@ -22,36 +22,55 @@
           <span>
               <el-row :gutter="10">
                   <el-col :span="24">
-                      <el-col :span="14">
+                      <el-col :span="18">
                           <el-card class="box-card custom-editor">
                                <!--<vue-editor id="editor1" v-model="task.description_html"></vue-editor>-->
-                                <froala :tag="'textarea'" :config="config" v-model="task.description_html"></froala>
-                                <button id="saveButton" @click="save">Save</button>
+                              <div class="btn-confirm-comment">
+                                <el-row :gutter="10">
+                                    <el-col :span="23">
+                                        <froala :tag="'textarea'" :config="config" v-model="task.description_html"></froala>
+                                        <!--<el-input :rows="row_comment"class="input-comment" type="textarea" v-model="comment_msg"></el-input>-->
+                                    </el-col>
+                                    <el-col :span="1">
+                                        <div>
+                                            <el-tooltip class="item" effect="dark" content="Save" placement="right">
+                                                <i @click="save_comment()" class="material-icons save-comment">save</i>
+                                            </el-tooltip>
+                                        </div>
+                                        <div>
+                                            <el-tooltip class="item" effect="dark" content="Cancel" placement="right">
+                                                <i @click="cancel_comment()" class="material-icons cancel-comment">close</i>
+                                            </el-tooltip>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </div>
                           </el-card>
+                          <custom-field></custom-field>
                       </el-col>
-                      <el-col :span="10">
+                      <el-col :span="6">
                           <el-row :gutter="10">
-                              <el-col :span="14">
-                                     <el-card class="box-card" style="min-height:203px">
-                                      <div slot="header" class="clearfix">
-                                        <span><b>Points</b></span>
-                                      </div>
-                                      <point
-                                          v-on:update_version="update_version"
-                                          :points="points"
-                                          :task-detail="taskDetail"
-                                          :points-data="pointsData">
-                                      </point>
-                                    </el-card>
-                              </el-col>
-                              <el-col :span="10">
+                              <!--<el-col :span="14">-->
+                                     <!--<el-card class="box-card" style="min-height:203px">-->
+                                      <!--<div slot="header" class="clearfix">-->
+                                        <!--<span><b>Points</b></span>-->
+                                      <!--</div>-->
+                                      <!--<point-->
+                                          <!--v-on:update_version="update_version"-->
+                                          <!--:points="points"-->
+                                          <!--:task-detail="taskDetail"-->
+                                          <!--:points-data="pointsData">-->
+                                      <!--</point>-->
+                                    <!--</el-card>-->
+                              <!--</el-col>-->
+                              <el-col :span="24">
                                   <el-card class="box-card" style="min-height:203px">
                                       <!--<div slot="header" class="clearfix">-->
                                           <!--<span><b>Thông tin task</b></span>-->
                                       <!--</div>-->
                                       <el-row>
                                           <p><b>Trạng thái task</b></p>
-                                          <el-dropdown size="mini" split-button type="primary">
+                                          <el-dropdown size="default" split-button type="primary">
                                               Ready for test
                                               <el-dropdown-menu slot="dropdown">
                                                 <el-dropdown-item>Action 1</el-dropdown-item>
@@ -61,6 +80,12 @@
                                               </el-dropdown-menu>
                                           </el-dropdown>
                                       </el-row>
+                                      <point
+                                          v-on:update_version="update_version"
+                                          :points="points"
+                                          :task-detail="taskDetail"
+                                          :points-data="pointsData">
+                                      </point>
                                       <div style="padding:10px 0px">
                                           <el-row>
                                               <div v-if="task.assigned_to == null">
@@ -109,9 +134,7 @@
                           </el-row>
                       </el-col>
                   </el-col>
-              </el-row>
-              <el-row :gutter="10">
-                  <el-col :span="24">
+                 <el-col :span="18">
                       <comment
                           v-on:push-comment="push_comment_task($event)"
                           :dataActivitiesTask="data_activities_task"
@@ -155,13 +178,15 @@
     import VueFroala from 'vue-froala-wysiwyg';
     import Comment from  './comment_task';
     import Point from './point';
+    import CustomField from './custom_field';
 
     export default {
         name: 'modal_detail_task',
         components:{
             VueFroala,
             Comment,
-            Point
+            Point,
+            CustomField
         },
         data:function(){
             return{
@@ -191,7 +216,16 @@
                 editor: null,
                 data_activities_task:[],
                 list_attach_file:[],
-                config: {}
+                config: {
+                    heightMax: 700,
+                    heightMin: 600,
+                    toolbarSticky: false,
+                    // toolbarInline: true,
+                    spellcheck: false,
+                    charCounterCount: false,
+                    // toolbarVisibleWithoutSelection: true,
+                    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'insertImage', 'insertLink', 'insertFile'],
+                }
             }
         },
         mounted(){
@@ -598,5 +632,19 @@
     }
     >>>.el-alert--error{
         margin-bottom:10px;
+    }
+    >>>.btn-confirm-comment .material-icons{
+        cursor: pointer;
+        font-size: 16px;
+        margin-top:10px;
+    }
+</style>
+<style>
+    .el-dropdown{
+        width: 100%;
+    }
+    .el-dropdown .el-button--medium{
+        width: 100%;
+        border-radius: unset;
     }
 </style>

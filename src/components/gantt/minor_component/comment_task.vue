@@ -120,7 +120,14 @@
         name: "Comment",
         data(){
             return{
-                config:{},
+                config: {
+                    toolbarSticky: false,
+                    // toolbarInline: true,
+                    spellcheck: false,
+                    charCounterCount: false,
+                    // toolbarVisibleWithoutSelection: true,
+                    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'insertImage', 'insertLink', 'insertFile'],
+                },
                 mode_show_attachments:'text',
                 url:`${this.$urlAPI}/userstories/attachments`,
                 headers:{Authorization: `Bearer ${localStorage.getItem('token')}`,},
@@ -311,10 +318,6 @@
     >>> .input-comment .el-textarea__inner{
         font-size: 12px;
         font-family: "Helvetica Neue";
-    }
-    >>>.btn-confirm-comment .material-icons{
-        cursor: pointer;
-        font-size: 16px;
     }
     >>> .btn-attach {
         display: inline-block;
