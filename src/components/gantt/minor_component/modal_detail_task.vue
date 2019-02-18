@@ -237,9 +237,9 @@
         },
         props: {
             dataProject:{
-                type: Array,
+                type: [Array, Object],
                 default: function(){
-                    return []
+                    return {}
                 }
             },
             points:{

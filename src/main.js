@@ -22,7 +22,6 @@ import App from './App';
 import router from './router';
 import _ from "lodash";
 import moment from 'vue-moment';
-
 Vue.use(Element, {locale});
 Vue.use(axios);
 Vue.use(Vuex);

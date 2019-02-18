@@ -166,7 +166,8 @@
                 columnList: [],
                 dialogVisible: false,
                 currentTaskData: {},
-                members:[]
+                members:[],
+                token: JSON.parse(localStorage.getItem('token')),
             }
         },
         methods:{
@@ -300,7 +301,7 @@
             getAttrTaskData(task){
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${this.token}`,
                 }
                 axios.get(`${that.$urlAPI}/userstories/custom-attributes-values/${task.id}`,{
                     headers: headers
@@ -329,7 +330,7 @@
                 }
                 let headers = {
                     // maxContentLength: 100,
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${this.token}`,
                     // 'x-disable-pagination': true,
                 };
                 let jqxhr = axios.get(`${that.$urlAPI}/userstories`,{
@@ -372,7 +373,7 @@
                 };
                 let headers = {
                     // maxContentLength: 100,
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${this.token}`,
                 }
                 axios.get(`${that.$urlAPI}/projects/by_slug`, {
                     params:pars,
