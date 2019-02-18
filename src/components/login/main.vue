@@ -53,7 +53,7 @@
                 axios.post(`${that.$urlAPI}/auth`, pars)
                     .then(function (res) {
                         // handle success
-                        localStorage.setItem('token', `${res['data']['auth_token']}`);
+                        localStorage.setItem('token', `${JSON.stringify(res['data']['auth_token'])}`);
                         localStorage.setItem('userInfo', JSON.stringify(res['data']));
                         router.replace('/');
                     });
