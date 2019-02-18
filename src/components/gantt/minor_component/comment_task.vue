@@ -291,12 +291,14 @@
                 }
             },
             save_comment(){
+                let toMarkdown = require('to-markdown');
+                let content = toMarkdown(this.comment_msg, { gfm: true });
                 if(this.mode_comment == 'comment') {
-                    this.$emit('push-comment', this.comment_msg);
+                    this.$emit('push-comment', content);
                 }else if(this.mode_comment == 'edit_comment'){
                     let data = {
                         id : this.id_edit_comment ,
-                        comment: this.comment_msg
+                        comment: content
                     }
                     this.$emit('push-edit-comment', data);
                 }

@@ -422,7 +422,7 @@
                 });
             },
             save() {
-                var toMarkdown = require('to-markdown');
+                let toMarkdown = require('to-markdown');
                 let that = this;
                 let headers = {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
