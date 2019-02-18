@@ -301,7 +301,7 @@
             getAttrTaskData(task){
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 }
                 axios.get(`${that.$urlAPI}/userstories/custom-attributes-values/${task.id}`,{
                     headers: headers
@@ -330,7 +330,7 @@
                 }
                 let headers = {
                     // maxContentLength: 100,
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                     // 'x-disable-pagination': true,
                 };
                 let jqxhr = axios.get(`${that.$urlAPI}/userstories`,{
@@ -373,7 +373,7 @@
                 };
                 let headers = {
                     // maxContentLength: 100,
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 }
                 axios.get(`${that.$urlAPI}/projects/by_slug`, {
                     params:pars,
