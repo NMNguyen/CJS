@@ -32,30 +32,32 @@
         <el-tabs type="border-card" class="comments-activities-tabs">
             <el-tab-pane>
                 <span slot="label">{{count_comment}} Comments</span>
-                <div class="container-comment" v-for="(comment, index) in data_activities_task_show">
-                    <span v-if="comment.comment && !comment['delete_comment_date']" class="comments-task">
-                        <el-row :gutter="10" class="comment-row">
-                            <el-col :span="1">
-                                <div>
-                                    <img  :src="comment.user['photo'] " style="border-radius: 50%;width:50px;"/>
-                                </div>
-                            </el-col>
-                            <el-col :span="21">
-                                <div class="content-comment-task">
-                                    <span class="user-comment-display-name">{{comment.user.name}}</span>
-                                    <span class="user-comment-display-name">{{comment.created_at | moment('DD/MM/YYYY HH:mm')}}</span>
-                                    <span v-if="comment.edit_comment_date" class="time-edit-comment">đã chỉnh sửa: {{comment.edit_comment_date | moment('DD/MM/YYYY HH:mm')}}</span>
+                <div class="body-comment">
+                    <div class="container-comment" v-for="(comment, index) in data_activities_task_show">
+                        <span v-if="comment.comment && !comment['delete_comment_date']" class="comments-task">
+                            <el-row :gutter="10" class="comment-row">
+                                <el-col :span="1">
+                                    <div>
+                                        <img  :src="comment.user['photo'] " style="border-radius: 50%;width:50px;"/>
+                                    </div>
+                                </el-col>
+                                <el-col :span="21">
+                                    <div class="content-comment-task">
+                                        <span class="user-comment-display-name">{{comment.user.name}}</span>
+                                        <span class="user-comment-display-name">{{comment.created_at | moment('DD/MM/YYYY HH:mm')}}</span>
+                                        <span v-if="comment.edit_comment_date" class="time-edit-comment">đã chỉnh sửa: {{comment.edit_comment_date | moment('DD/MM/YYYY HH:mm')}}</span>
 
-                                    <div class="comment-box" v-html="comment.comment_html"></div>
-                                </div>
-                            </el-col>
-                            <el-col :span="2" v-if="comment.user.pk == user_login.id" class="edit-deleted-comment">
-                                <i @click="trigger_deleted_comment(comment)" class="material-icons icon-deleted-comment">delete_forever</i>
-                                <i @click="trigger_edit_comment(comment)" class="material-icons icon-edit-comment">edit</i>
+                                        <div class="comment-box" v-html="comment.comment_html"></div>
+                                    </div>
+                                </el-col>
+                                <el-col :span="2" v-if="comment.user.pk == user_login.id" class="edit-deleted-comment">
+                                    <i @click="trigger_deleted_comment(comment)" class="material-icons icon-deleted-comment">delete_forever</i>
+                                    <i @click="trigger_edit_comment(comment)" class="material-icons icon-edit-comment">edit</i>
 
-                            </el-col>
-                        </el-row>
-                    </span>
+                                </el-col>
+                            </el-row>
+                        </span>
+                    </div>
                 </div>
                 <div class="btn-confirm-comment">
                     <el-row :gutter="10">
@@ -291,12 +293,13 @@
                 }
             },
             save_comment(){
+                var toMarkdown = require('to-markdown');
                 if(this.mode_comment == 'comment') {
-                    this.$emit('push-comment', this.comment_msg);
+                    this.$emit('push-comment', toMarkdown(this.comment_msg, { gfm: true }));
                 }else if(this.mode_comment == 'edit_comment'){
                     let data = {
                         id : this.id_edit_comment ,
-                        comment: this.comment_msg
+                        comment: toMarkdown(this.comment_msg, { gfm: true })
                     }
                     this.$emit('push-edit-comment', data);
                 }
@@ -378,5 +381,9 @@
         float: right;
         padding: 0px 3px;
         font-size: 14px;
+    }
+    >>> .body-comment {
+        overflow-y: scroll;
+
     }
 </style>

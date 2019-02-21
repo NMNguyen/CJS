@@ -109,6 +109,7 @@
              :dialog-visible="dialogVisible"
              :members="members"
              :data-project="dataProject"
+             :data-task-spint="current_status_task"
         >
         </modal-detail-task>
     </span>
@@ -149,14 +150,30 @@
                 columnList: [],
                 dialogVisible: false,
                 currentTaskData: {},
-                members:[]
+                members:[],
+                current_status_task:{}
             }
         },
         methods:{
             closeModal(){
                 this.dialogVisible = false;
             },
-            rowClick(rowData){
+            // push_change_status_task(status,version){
+            //     let that = this;
+            //     let headers = {
+            //         Authorization: `Bearer ${localStorage.getItem('token')}`,
+            //     };
+            //     //let data = {'points': this.taskDetail.points, 'version':this.taskDetail.version};
+            //     axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data, {
+            //         headers: headers
+            //     })
+            //         .then(function (res) {
+            //             that.taskDetail.version +=1;
+            //         });
+            // }
+            rowClick(rowData,rowIndex){
+                // alert(rowIndex)
+                // console.log(rowIndex)
                 let that = this;
                 this.currentTaskData = rowData;
                 this.$confirm('Bạn muốn xem chi tiết Task tại đây hay xem qua kanban?', 'Điều hướng', {
@@ -166,6 +183,7 @@
                 })
                   .then(() => {
                     that.dialogVisible = true;
+                    that.current_status_task = rowData.status_extra_info
                   })
                   .catch(action => {
                       if (action == 'cancel'){
@@ -349,6 +367,7 @@
                 })
                     .then(function (res) {
                         // handle success
+                        console.log(res)
                         that.dataProject = res['data'];
                         that.members = res['data'].members;
                         if (that.members.length >0) {

@@ -60,14 +60,30 @@
                                                 <!--<el-dropdown-item>Action 4</el-dropdown-item>-->
                                               <!--</el-dropdown-menu>-->
                                           <!--</el-dropdown>-->
-                                          <el-select v-model="status_task" placeholder="Select">
-                                              <el-option
-                                                  v-for="item in dataProject.epic_statuses"
-                                                  :key="item.id"
-                                                  :label="item.name"
-                                                  :value="item.id">
-                                              </el-option>
-                                          </el-select>
+                                          <!--<status-task :data-project="dataProject" :task-detail="taskDetail">-->
+                                              <!---->
+                                          <!--</status-task>-->
+                                          <status-task
+                                              :data-project="dataProject"
+                                              :task-detail="taskDetail"
+                                              :data-task-spint="status_task"></status-task>
+                                          <!--<el-select v-model="status_task" placeholder="Select">-->
+                                              <!--<el-option-->
+                                                  <!--v-for="item in dataProject.epic_statuses"-->
+                                                  <!--:key="item.id"-->
+                                                  <!--:label="item.name"-->
+                                                  <!--:value="item.id">-->
+                                              <!--</el-option>-->
+                                          <!--</el-select>-->
+                                          <!--<el-dropdown split-button type="primary" @click="handleClick">Dropdown List-->
+                                              <!--<el-dropdown-menu slot="dropdown">-->
+                                                  <!--<el-dropdown-item>Action 1</el-dropdown-item>-->
+                                                  <!--<el-dropdown-item>Action 2</el-dropdown-item>-->
+                                                  <!--<el-dropdown-item>Action 3</el-dropdown-item>-->
+                                                  <!--<el-dropdown-item>Action 4</el-dropdown-item>-->
+                                                  <!--<el-dropdown-item>Action 5</el-dropdown-item>-->
+                                              <!--</el-dropdown-menu>-->
+                                          <!--</el-dropdown>-->
                                       </el-row>
                                       <point
                                           :points="points"
@@ -164,6 +180,9 @@
             <el-button type="primary" @click="add_watcher_and_assign_to()">Confirm</el-button>
         </span>
         </el-dialog>
+        <!--<el-dialog :visible.sync="dialogVisible">-->
+            <!--<img width="100%" :src="dialogImageUrl" alt="">-->
+        <!--</el-dialog>-->
     </span>
 
 </template>
@@ -172,6 +191,7 @@
     import VueFroala from 'vue-froala-wysiwyg';
     import Comment from  './comment_task';
     import Point from './point';
+    import StatusTask from './status_task';
     import CustomField from './custom_field';
 
     export default {
@@ -180,7 +200,8 @@
             VueFroala,
             Comment,
             Point,
-            CustomField
+            CustomField,
+            StatusTask,
         },
         data:function(){
             return{
@@ -221,7 +242,8 @@
                     charCounterCount: false,
                     // toolbarVisibleWithoutSelection: true,
                     toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'insertImage', 'insertLink', 'insertFile'],
-                }
+                },
+                status_task:{}
             }
         },
         mounted(){
@@ -236,11 +258,14 @@
             // this.editor.destroy();
         },
         props: {
-            dataProject:{
-                type: Array,
+            dataTaskSpint:{
+                type: Object,
                 default: function(){
-                    return []
+                    return {}
                 }
+            },
+            dataProject:{
+                type: [Array,Object]
             },
             points:{
               type: Array,
@@ -280,6 +305,11 @@
                     this.task = Object.assign(this.task,val)
                 }
             }
+            // dataTaskSpint(val) {
+            //     if (val){
+            //         this.status_task = Object.assign(this.status_task,val)
+            //     }
+            // }
         },
         methods:{
             update_version(){
@@ -462,6 +492,7 @@
                 .then(function (res) {
                     that.$set(that, 'task', res['data'])
                     that.task['description_html'] = res['data'].description_html;
+                    that.status_task = Object.assign(that.status_task,that.dataTaskSpint)
                     that.$forceUpdate();
                 });
             },
@@ -674,7 +705,7 @@
         display: inline-block;
         position: absolute;
         bottom: 15px;
-        left: 2px;
+        left: 15px;
         height: 40px;
         width: 40px;
         border-radius: 50%;
@@ -685,7 +716,8 @@
     }
     .search-assign-to-task li > p{
         font-size: 14px;
-        padding-left: 30px;
+        padding-left: 45px;
+        padding-right: 5px;
         display: inline-block;
         font-weight: bold;
         font-family: "Helvetica Neue", Helvetica;
