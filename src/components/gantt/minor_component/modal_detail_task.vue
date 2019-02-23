@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span class="font-default">
         <el-dialog
           :visible.sync="dialogVisible"
           :close-on-click-modal="false"
@@ -180,9 +180,9 @@
             <el-button type="primary" @click="add_watcher_and_assign_to()">Confirm</el-button>
         </span>
         </el-dialog>
-        <!--<el-dialog :visible.sync="dialogVisible">-->
-            <!--<img width="100%" :src="dialogImageUrl" alt="">-->
-        <!--</el-dialog>-->
+        <el-dialog>
+
+        </el-dialog>
     </span>
 
 </template>
@@ -258,14 +258,17 @@
             // this.editor.destroy();
         },
         props: {
+            dataProject:{
+                type: [Array, Object],
+                default: function(){
+                    return []
+                }
+            },
             dataTaskSpint:{
                 type: Object,
                 default: function(){
                     return {}
                 }
-            },
-            dataProject:{
-                type: [Array,Object]
             },
             points:{
               type: Array,
@@ -305,11 +308,6 @@
                     this.task = Object.assign(this.task,val)
                 }
             }
-            // dataTaskSpint(val) {
-            //     if (val){
-            //         this.status_task = Object.assign(this.status_task,val)
-            //     }
-            // }
         },
         methods:{
             update_version(){
@@ -378,7 +376,7 @@
                     }
                 }
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data,{
                     headers:headers
@@ -422,7 +420,7 @@
                     }
                 }
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data,{
                     headers:headers
@@ -452,10 +450,10 @@
                 });
             },
             save() {
-                var toMarkdown = require('to-markdown');
+                let toMarkdown = require('to-markdown');
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 let pars = {
                     'description': toMarkdown(this.task.description_html, { gfm: true }),
@@ -484,7 +482,7 @@
             getDetailTask(){
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.get(`${that.$urlAPI}/userstories/by_ref?order_by=kanban_order&project=1&ref=${that.taskDetail.ref}`, {
                     headers: headers
@@ -500,7 +498,7 @@
                 let that = this;
                 let headers = {
                     'x-disable-pagination': false,
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.get(`${that.$urlAPI}/history/userstory/${that.taskDetail.id}`, {
                     headers:headers
@@ -514,7 +512,7 @@
             delete_comment_task(id){
                 let that = this
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`
                 };
                 axios.post(`${that.$urlAPI}/history/userstory/${that.taskDetail.id}/delete_comment?id=${id}`,{},{
                     headers:headers
@@ -530,7 +528,7 @@
                 }
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data,{
                     headers:headers
@@ -547,7 +545,7 @@
                 let that = this;
                 let data = {comment: comment.comment}
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.post(`${that.$urlAPI}/history/userstory/${that.taskDetail.id}/edit_comment?id=${comment.id}`, data,{
                     headers:headers
@@ -560,7 +558,7 @@
             get_attach_file(){
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.get(`${that.$urlAPI}/userstories/attachments?object_id=${that.taskDetail.id}&project=1`, {
                     headers: headers
@@ -728,5 +726,8 @@
         hyphens: none;
         -webkit-hyphens: none;
         -moz-hyphens: none;
+    }
+    .font-default{
+        font-family: "Helvetica Neue", Helvetica !important;
     }
 </style>

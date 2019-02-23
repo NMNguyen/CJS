@@ -72,7 +72,7 @@
               };
               let that = this;
               let headers = {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
               };
               axios.patch(`${that.$urlAPI}/userstories/custom-attributes-values/${that.taskDetail.id}`, data, {
                   headers: headers

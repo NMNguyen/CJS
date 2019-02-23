@@ -65,7 +65,7 @@
             update_status_task() {
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 let data = {'status': this.current_id_status, 'version':this.taskDetail.version};
                 axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data, {

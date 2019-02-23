@@ -138,7 +138,7 @@
                 },
                 mode_show_attachments:'text',
                 url:`${this.$urlAPI}/userstories/attachments`,
-                headers:{Authorization: `Bearer ${localStorage.getItem('token')}`,},
+                headers:{Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`},
                 fileList: [],
                 row_comment:5,
                 data_activities_task_show:[],
@@ -227,7 +227,7 @@
                 console.log(file, fileList);
                 let that = this;
                 let headers = {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
                 axios.delete(`${that.$urlAPI}/userstories/attachments/${file.id}`, {
                     headers: headers
@@ -237,6 +237,10 @@
             },
             handlePreview(file) {
                 console.log(file);
+                alert(file.type)
+                $('.el-upload-list__item-name').attr({target: '_blank',
+                    href  : file.preview_url});
+
             },
             handleExceed(files, fileList) {
                 this.$message.warning(`The limit is 3, you selected ${files.length} files this time, add up to ${files.length + fileList.length} totally`);
@@ -293,7 +297,7 @@
                 }
             },
             save_comment(){
-                var toMarkdown = require('to-markdown');
+                let toMarkdown = require('to-markdown');
                 if(this.mode_comment == 'comment') {
                     this.$emit('push-comment', toMarkdown(this.comment_msg, { gfm: true }));
                 }else if(this.mode_comment == 'edit_comment'){
@@ -324,10 +328,13 @@
     >>>.comments-task .el-row, .activitie-task .el-row{
         padding: 20px 0px;
     }
-    >>>.comments-task .el-col-21 .content-comment-task , .activitie-task .el-col-21 .content-comment-task{
+    >>>.comments-task .el-col-21 .content-comment-task {
         padding-left: 15px;
     }
-    >>>.comments-task img{
+    >>>.activitie-task .el-col-23 .content-comment-task{
+        padding-left: 20px;
+    }
+    >>>.comments-task .el-col-21 img{
         max-width: 95%;
     }
     >>>.comments-activities-tabs {
@@ -340,7 +347,6 @@
     }
     >>>.activitie-task .el-col-23 .title-active-task {
         background: #e4e3e3;
-        margin: .25rem .5rem;
         padding: .25rem;
         display: inline-block;
     }

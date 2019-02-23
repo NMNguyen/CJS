@@ -78,7 +78,7 @@
           updatePointTask() {
               let that = this;
               let headers = {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
               };
               let data = {'points': this.taskDetail.points, 'version':this.taskDetail.version};
               axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data, {
