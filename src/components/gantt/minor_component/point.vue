@@ -85,10 +85,25 @@
                   headers: headers
               })
               .then(function (res) {
-                  that.taskDetail.version +=1;
-              });
+                  that.$set(that.taskDetail,'version',res['data'].version)
+                  that.$forceUpdate();
+                  that.$message({
+                        showClose: true,
+                        message: 'Thay đổi thành công!',
+                        type: 'success'
+                    });
+              })
+              .catch((err) => {
+                  if(err){
+                      that.$message({
+                          showClose: true,
+                          message: 'Thay đổi của bạn không thành công!',
+                          type: 'error'
+                      });
+                  }
+              })
+            }
           }
-      }
   };
 </script>
 

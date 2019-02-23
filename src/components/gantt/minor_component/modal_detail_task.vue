@@ -2,22 +2,32 @@
     <span class="font-default">
         <el-dialog
           :visible.sync="dialogVisible"
+          v-loading="loading_task"
           :close-on-click-modal="false"
           :before-close="closeModal"
           :fullscreen="true"
           :show-close="false"
           width="80%">
-            <span slot="title" @click="editTitleTask">
-                <h2 class="refTaskID" v-show="!isEditTitleTask">#{{task.ref}}</h2>
-                <el-input
-                    @keypress.13.native="submit"
-                    ref="titleInput"
-                    :autosize="{ minRows: 2, maxRows: 4}"
-                    type="textarea"
-                    @blur="isEditTitleTask = false"
-                    v-model="task.subject"
-                    :disabled="!isEditTitleTask">
-                </el-input>
+            <span slot="title" >
+                <el-row :gutter="10">
+                  <el-col :span="isEditTitleTask ? 23 : 24" >
+                  <div @click="editTitleTask()">
+                    <h2 class="refTaskID" v-show="!isEditTitleTask">#{{task.ref}}</h2>
+                    <el-input
+                        @keypress.13.native="submit"
+                        ref="titleInput"
+                        :autosize="{ minRows: 2, maxRows: 4}"
+                        type="textarea"
+                        v-model="title_task"
+                        :disabled="!isEditTitleTask">
+                    </el-input>
+                  </div>
+                  </el-col>
+                    <el-col :span="1" v-if="isEditTitleTask">
+                        <i @click="save_title_task()" class="material-icons save-title">save</i>
+                        <i @click="cancel_title_task()" class="material-icons save-title"">close</i>
+                    </el-col>
+                </el-row>
             </span>
           <span>
               <el-row :gutter="10">
@@ -229,6 +239,7 @@
                 search_staff:'',
                 show_add_watch:false,
                 isEditTitleTask: false,
+                loading_task: false,
                 editor: null,
                 data_activities_task:[],
                 list_attach_file:[],
@@ -243,7 +254,8 @@
                     // toolbarVisibleWithoutSelection: true,
                     toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'insertImage', 'insertLink', 'insertFile'],
                 },
-                status_task:{}
+                status_task:{},
+                title_task:''
             }
         },
         mounted(){
@@ -298,6 +310,8 @@
         watch:{
             dialogVisible(newVal){
                 if (newVal){
+                    this.isEditTitleTask = false
+                    this.loading_task =  false
                     this.getDetailTask();
                     this.get_data_activities_task();
                     this.get_attach_file();
@@ -306,10 +320,56 @@
             taskDetail(val){
                 if (val){
                     this.task = Object.assign(this.task,val)
+                    this.title_task = this.task.subject
                 }
             }
         },
         methods:{
+            cancel_title_task(){
+                let that = this
+                that.isEditTitleTask = false
+                that.title_task = that.task.subject
+            },
+            save_title_task(){
+                let that = this
+                let data = {
+                        version: that.task.version,
+                        subject:that.title_task
+                    }
+                let headers = {
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
+                };
+                that.loading_task =  true
+                axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data,{
+                    headers:headers
+                })
+                    .then(function (res) {
+                        if(res['data']) {
+                            that.loading_task =  false
+                            that.$set(that, 'task', res['data'])
+                            that.$set(that.task, 'subject', res['data'].subject);
+                            that.title_task = res['data'].subject
+                            that.$set(that.task,'version',res['data'].version)
+                        }
+                        that.$message({
+                            showClose: true,
+                            message: 'Thay đổi thành công!',
+                            type: 'success'
+                        });
+                        that.$forceUpdate();
+                    })
+                    .catch((err) => {
+                        if(err){
+                             that.loading_task =  false
+                             that.title_task = that.task.subject
+                             that.$message({
+                                 showClose: true,
+                                 message: 'Thay đổi của bạn không thành công!',
+                                 type: 'error'
+                             });
+                         }
+                    })
+            },
             update_version(){
               this.task.version +=1;
             },
@@ -378,6 +438,7 @@
                 let headers = {
                     Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
+                that.loading_task = true
                 axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data,{
                     headers:headers
                 })
@@ -393,10 +454,25 @@
                                 that.$set(that.task, 'assigned_to', res['data'].assigned_to);
                             }
                             that.$set(that.task,'version',res['data'].version)
+                            that.loading_task = false
                         }
                         that.$forceUpdate();
-
-                    });
+                        that.$message({
+                            showClose: true,
+                            message: 'Thay đổi thành công!',
+                            type: 'success'
+                        });
+                    })
+                    .catch((err) => {
+                        if(err){
+                            that.loading_task =  false
+                            that.$message({
+                                showClose: true,
+                                message: 'Thay đổi của bạn không thành công!',
+                                type: 'error'
+                            });
+                        }
+                    })
             },
             add_watcher_and_assign_to(){
                 let that = this;
@@ -422,6 +498,7 @@
                 let headers = {
                     Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
                 };
+                that.loading_task =  true
                 axios.patch(`${that.$urlAPI}/userstories/${that.taskDetail.id}`, data,{
                     headers:headers
                 })
@@ -442,11 +519,25 @@
                             that.$set(that.task,'version',res['data'].version)
                             that.search_staff = ''
                         }
+                        that.loading_task =  false
+                        that.$message({
+                            showClose: true,
+                            message: 'Thay đổi thành công!',
+                            type: 'success'
+                        });
                         that.$forceUpdate();
 
-                    }).catch(() => {
-                    that.show_add_watch = false
-                    that.search_staff = ''
+                    }).catch((err) => {
+                        if(err){
+                            that.show_add_watch = false
+                            that.search_staff = ''
+                            that.loading_task =  false
+                            that.$message({
+                                showClose: true,
+                                message: 'Thay đổi của bạn không thành công!',
+                                type: 'error'
+                            });
+                        }
                 });
             },
             save() {
@@ -464,7 +555,21 @@
                 })
                 .then(function (res) {
                     that.task.version += 1;
-                });
+                    //that.loading_task =  false
+                    that.$message({
+                        showClose: true,
+                        message: 'Thay đổi thành công!',
+                        type: 'success'
+                    });
+                }).catch((err) => {
+                    if(err){
+                        that.$message({
+                            showClose: true,
+                            message: 'Thay đổi của bạn không thành công!',
+                            type: 'error'
+                        });
+                    }
+                })
             },
             submit(e){
                 e.preventDefault();
@@ -588,9 +693,11 @@
     }
     >>>.el-textarea__inner{
         font-size:20px;
+        font-family: "Helvetica Neue", Helvetica !important;
     }
     >>>.el-dialog__body{
         padding-top:0px;
+
     }
     >>>#editor1{
         max-height:80vh;
@@ -689,6 +796,9 @@
     }
     >>>.el-autocomplete{
         width: 100% !important;
+    }
+    >>> .save-title{
+        cursor: pointer;
     }
 </style>
 <style>

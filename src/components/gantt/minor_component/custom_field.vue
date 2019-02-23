@@ -78,8 +78,23 @@
                   headers: headers
               })
               .then(function (res) {
-                  that.$set(that.taskDetail, 'version', res['data'].version_attr);
-              });
+                  that.$set(that.taskDetail, 'version', res['data'].version);
+                  that.$message({
+                      showClose: true,
+                      message: 'Thay đổi thành công!',
+                      type: 'success'
+                  });
+                  that.$forceUpdate();
+              })
+              .catch((err) => {
+                  if(err){
+                      that.$message({
+                          showClose: true,
+                          message: 'Thay đổi của bạn không thành công!',
+                          type: 'error'
+                      });
+                  }
+              })
           },
       }
   };

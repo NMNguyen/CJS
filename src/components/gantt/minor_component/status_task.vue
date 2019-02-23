@@ -73,10 +73,24 @@
                 })
                     .then(function (res) {
                         console.log(res)
-                        that.taskDetail.version +=1;
+                        that.$set(that.taskDetail,'version',res['data'].version)
                         that.taskDetail = Object.assign(that.taskDetail,res['data'])
+                        that.$message({
+                            showClose: true,
+                            message: 'Thay đổi thành công!',
+                            type: 'success'
+                        });
                         that.$forceUpdate();
-                    });
+                    })
+                    .catch((err) => {
+                      if(err){
+                          that.$message({
+                              showClose: true,
+                              message: 'Thay đổi của bạn không thành công!',
+                              type: 'error'
+                          });
+                      }
+              })
             }
         }
     };

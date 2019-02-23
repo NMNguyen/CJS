@@ -17,6 +17,7 @@
                     :list-type="mode_show_attachments"
                     :file-list="fileList">
                 <div class="btn-attach title-add_attach">
+                     <span v-text="fileList.length" v-if="fileList.length"></span>
                     <span>attachments</span>
                 </div>
                 <div class="btn-attach mode_add_attach">
@@ -106,6 +107,9 @@
                                                 <div v-if="index == 'custom_attributes'">
                                                     <span v-html="get_name_field_actived(item)"></span>
                                                     <span v-html="get_content_field_actived(item)"></span>
+                                                </div>
+                                                 <div v-if="index == 'points'">
+                                                    <span v-html="get_content_field_actived_point(item)"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -236,8 +240,6 @@
                 });
             },
             handlePreview(file) {
-                console.log(file);
-                alert(file.type)
                 $('.el-upload-list__item-name').attr({target: '_blank',
                     href  : file.preview_url});
 
@@ -281,6 +283,7 @@
                 }
             },
             get_content_field_actived: function (content) {
+                console.log(content)
                 if( content['changed'] && content['changed'].length>0){
                     if (content['changed'][0].changes && content['changed'][0].changes['value'].length >0){
                         content['changed'][0].changes['value'].forEach(function (item, i) {
@@ -294,6 +297,21 @@
                     return content['new'][0].value_diff
                 }else {
                     return
+                }
+            },
+            get_content_field_actived_point(content){
+               if(content){
+                    for(var point in content){
+                        if(content[point] && content[point].length >0){
+                            content[point].forEach(function (item, i) {
+                                if (item == null || item == '') {
+                                    content[point][i] = "..."
+                                }
+                            })
+                            return content[point].join(' &rsaquo; ')
+                        }
+                    }
+
                 }
             },
             save_comment(){
